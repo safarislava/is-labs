@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.RepeatableReadTransactional;
 import ru.ifmo.se.application.dto.command.BookCreatureCreateCommand;
 import ru.ifmo.se.application.dto.command.BookCreatureUpdateCommand;
 import ru.ifmo.se.application.dto.event.NotificationEvent;
@@ -45,7 +46,7 @@ public class BookCreatureService implements BookCreatureUseCase {
     private Event<NotificationEvent> eventPublisher;
 
     @Override
-    @Transactional
+    @RepeatableReadTransactional
     public BookCreatureResult create(BookCreatureCreateCommand command) {
         MagicCity city = resolveCity(command.getCreatureLocationId());
         Ring ring = resolveRing(command.getRingId(), null);
@@ -63,7 +64,7 @@ public class BookCreatureService implements BookCreatureUseCase {
     }
 
     @Override
-    @Transactional
+    @RepeatableReadTransactional
     public BookCreatureResult update(int id, BookCreatureUpdateCommand command) {
         BookCreature creature = bookCreatureRepository.findById(id)
                 .orElseThrow(() -> new BookCreatureNotFoundException(id));

@@ -3,7 +3,7 @@ package ru.ifmo.se.application.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.RepeatableReadTransactional;
 import ru.ifmo.se.application.dto.command.ObjectsCreateCommand;
 import ru.ifmo.se.application.dto.event.ImportEvent;
 import ru.ifmo.se.application.dto.result.ObjectsResult;
@@ -21,7 +21,7 @@ public class ObjectsService implements ObjectsUseCase {
     private BatchExecutionService batchExecutionService;
 
     @Override
-    @Transactional
+    @RepeatableReadTransactional
     public ObjectsResult create(ObjectsCreateCommand command, String username) {
         ImportEvent startEvent = ImportEvent.start(username);
         importEventPublisher.fire(startEvent);
