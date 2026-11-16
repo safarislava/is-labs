@@ -46,7 +46,7 @@ public class BookCreatureService implements BookCreatureUseCase {
     private Event<NotificationEvent> eventPublisher;
 
     @Override
-    @RepeatableReadTransactional
+    @Transactional
     public BookCreatureResult create(BookCreatureCreateCommand command) {
         MagicCity city = resolveCity(command.getCreatureLocationId());
         Ring ring = resolveRing(command.getRingId(), null);
