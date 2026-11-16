@@ -52,7 +52,7 @@ public class MagicCityService implements MagicCityUseCase {
     }
 
     @Override
-    @Transactional
+    @RepeatableRead
     public MagicCityResult update(int id, MagicCityUpdateCommand command) {
         MagicCity city = magicCityRepository.findById(id)
                 .orElseThrow(() -> new MagicCityNotFoundException(id));

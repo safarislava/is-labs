@@ -77,7 +77,7 @@ public class BookCreatureService implements BookCreatureUseCase {
     }
 
     @Override
-    @Transactional
+    @RepeatableRead
     public void delete(int id) {
         if (bookCreatureRepository.findById(id).isEmpty()) {
             throw new BookCreatureNotFoundException(id);
