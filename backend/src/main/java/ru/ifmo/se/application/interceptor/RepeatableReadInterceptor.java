@@ -6,15 +6,15 @@ import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import ru.ifmo.se.application.annotation.RepeatableReadTransactional;
+import ru.ifmo.se.application.annotation.RepeatableRead;
 
 import java.io.Serial;
 import java.io.Serializable;
 
 @Interceptor
-@RepeatableReadTransactional
+@RepeatableRead
 @Priority(Interceptor.Priority.PLATFORM_BEFORE + 210)
-public class RepeatableReadTransactionalInterceptor implements Serializable {
+public class RepeatableReadInterceptor implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

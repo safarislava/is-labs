@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Transactional
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RepeatableReadTransactional {
+public @interface RepeatableRead {
 
     @Nonbinding
     Transactional.TxType value() default Transactional.TxType.REQUIRED;
