@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.RepeatableRead;
 import ru.ifmo.se.application.dto.command.BookCreatureCreateCommand;
 import ru.ifmo.se.application.dto.command.BookCreatureUpdateCommand;
 import ru.ifmo.se.application.dto.event.NotificationEvent;
@@ -63,7 +64,7 @@ public class BookCreatureService implements BookCreatureUseCase {
     }
 
     @Override
-    @Transactional
+    @RepeatableRead
     public BookCreatureResult update(int id, BookCreatureUpdateCommand command) {
         BookCreature creature = bookCreatureRepository.findById(id)
                 .orElseThrow(() -> new BookCreatureNotFoundException(id));
@@ -76,7 +77,7 @@ public class BookCreatureService implements BookCreatureUseCase {
     }
 
     @Override
-    @Transactional
+    @RepeatableRead
     public void delete(int id) {
         if (bookCreatureRepository.findById(id).isEmpty()) {
             throw new BookCreatureNotFoundException(id);

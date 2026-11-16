@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.RepeatableRead;
 import ru.ifmo.se.application.dto.command.RingCreateCommand;
 import ru.ifmo.se.application.dto.command.RingUpdateCommand;
 import ru.ifmo.se.application.dto.event.NotificationEvent;
@@ -46,7 +47,7 @@ public class RingService implements RingUseCase {
     }
 
     @Override
-    @Transactional
+    @RepeatableRead
     public RingResult update(int id, RingUpdateCommand command) {
         Ring ring = ringRepository.findById(id)
                 .orElseThrow(() -> new RingNotFoundException(id));
@@ -57,7 +58,7 @@ public class RingService implements RingUseCase {
     }
 
     @Override
-    @Transactional
+    @RepeatableRead
     public void delete(int id) {
         if (ringRepository.findById(id).isEmpty()) {
             throw new RingNotFoundException(id);
