@@ -1,17 +1,88 @@
 {
-  "rings": [],
-  "cities": [],
+  "rings": [
+    {
+      "tempId": 101,
+      "name": "Кольцо Саурона (Единое Кольцо)",
+      "power": 1000
+    },
+    {
+      "tempId": 102,
+      "name": "Железный венец Моргота",
+      "power": 850
+    }
+  ],
+  "cities": [
+    {
+      "tempId": 201,
+      "name": "Барад-дур (Темная Твердыня)",
+      "area": 25000,
+      "population": 80000,
+      "establishmentDate": "1000-01-01T00:00:00",
+      "governor": "HUMAN",
+      "capital": true,
+      "populationDensity": 3.2
+    },
+    {
+      "tempId": 202,
+      "name": "Копи Мории (Кхазад-дум)",
+      "area": 12000,
+      "population": 15000,
+      "establishmentDate": "1980-01-01T00:00:00",
+      "governor": "GOLLUM",
+      "capital": false,
+      "populationDensity": 1.25
+    }
+  ],
   "creatures": [
     {
-      "name": "Невалидное существо (координаты)",
+      "name": "Король-чародей Ангмара",
       "coordinates": {
-        "x": 501,
-        "y": -780.0
+        "x": 450,
+        "y": 120.0
       },
-      "age": 100,
-      "creatureType": "HOBBIT",
-      "attackLevel": 10.0,
-      "defenseLevel": 10.0
+      "age": 4200,
+      "creatureType": "HUMAN",
+      "attackLevel": 90.0,
+      "defenseLevel": 85.0,
+      "tempRingId": 102,
+      "tempCreatureLocationId": 201
+    },
+    {
+      "name": "Саурон (Око в небесах)",
+      "coordinates": {
+        "x": 650,
+        "y": 300.0
+      },
+      "age": 12000,
+      "creatureType": "HUMAN",
+      "attackLevel": 99.0,
+      "defenseLevel": 99.0,
+      "tempRingId": 101,
+      "tempCreatureLocationId": 201
+    },
+    {
+      "name": "Балрог (Ужас бездны)",
+      "coordinates": {
+        "x": -200,
+        "y": -850.0
+      },
+      "age": 7000,
+      "creatureType": "GOLLUM",
+      "attackLevel": 95.0,
+      "defenseLevel": 90.0,
+      "tempCreatureLocationId": 202
+    },
+    {
+      "name": "Готмог Военачальник Мордора",
+      "coordinates": {
+        "x": 420,
+        "y": 110.0
+      },
+      "age": 450,
+      "creatureType": "HUMAN",
+      "attackLevel": 75.0,
+      "defenseLevel": 70.0,
+      "tempCreatureLocationId": 201
     }
   ]
 }

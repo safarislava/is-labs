@@ -1,32 +1,89 @@
 {
   "rings": [
     {
-      "tempId": 1,
-      "name": "Обычное кольцо",
-      "power": 50
+      "tempId": 101,
+      "name": "Нарья (Кольцо Огня)",
+      "power": 350
+    },
+    {
+      "tempId": 102,
+      "name": "Ненья (Кольцо Воды)",
+      "power": 320
     }
   ],
   "cities": [
     {
-      "tempId": 1,
-      "name": "Минас Тирит",
+      "tempId": 201,
+      "name": "Лотлориэн (Золотой Лес)",
       "area": 5000,
-      "population": 20000
+      "population": 12000,
+      "establishmentDate": "1350-05-20T00:00:00",
+      "governor": "ELF",
+      "capital": false,
+      "populationDensity": 2.4
+    },
+    {
+      "tempId": 202,
+      "name": "Серые Гавани (Митлонд)",
+      "area": 8500,
+      "population": 9000,
+      "establishmentDate": "0001-01-01T00:00:00",
+      "governor": "ELF",
+      "capital": false,
+      "populationDensity": 1.06
     }
   ],
   "creatures": [
     {
-      "name": "Странник",
+      "name": "Галадриэль",
       "coordinates": {
-        "x": 100,
-        "y": 100.0
+        "x": 205,
+        "y": 155.0
       },
-      "age": 45,
+      "age": 8372,
+      "creatureType": "ELF",
+      "attackLevel": 90.0,
+      "defenseLevel": 99.0,
+      "tempRingId": 102,
+      "tempCreatureLocationId": 201
+    },
+    {
+      "name": "Гэндальф Серый",
+      "coordinates": {
+        "x": 200,
+        "y": 150.0
+      },
+      "age": 2019,
       "creatureType": "HUMAN",
-      "attackLevel": 50.0,
-      "defenseLevel": 50.0,
-      "tempCreatureLocationId": 999,
-      "tempRingId": 888
+      "attackLevel": 99.0,
+      "defenseLevel": 95.0,
+      "tempRingId": 101,
+      "tempCreatureLocationId": 202
+    },
+    {
+      "name": "Арагорн II (ошибка связывания — несуществующие tempId)",
+      "coordinates": {
+        "x": 320,
+        "y": 110.0
+      },
+      "age": 87,
+      "creatureType": "HUMAN",
+      "attackLevel": 90.0,
+      "defenseLevel": 85.0,
+      "tempRingId": 999,
+      "tempCreatureLocationId": 888
+    },
+    {
+      "name": "Леголас Зеленолист",
+      "coordinates": {
+        "x": 215,
+        "y": -40.0
+      },
+      "age": 2931,
+      "creatureType": "ELF",
+      "attackLevel": 95.0,
+      "defenseLevel": 80.0,
+      "tempCreatureLocationId": 201
     }
   ]
 }
