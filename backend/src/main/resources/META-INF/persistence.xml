@@ -16,6 +16,7 @@
         <class>ru.ifmo.se.persistence.converter.ZonedDateTimeConverter</class>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
+            <property name="eclipselink.session.customizer" value="ru.ifmo.se.persistence.dbcp.DbcpSessionCustomizer"/>
             <property name="jboss.as.jpa.providerModule" value="org.eclipse.persistence"/>
             <property name="eclipselink.target-server" value="WildFly"/>
             <property name="eclipselink.target-database" value="PostgreSQL"/>
