@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import ru.ifmo.se.application.repository.RefreshTokenRepository;
+import ru.ifmo.se.persistence.cache.EvictCache;
 import ru.ifmo.se.persistence.entity.RefreshToken;
 import ru.ifmo.se.persistence.entity.User;
 
@@ -37,6 +38,7 @@ public class JpaRefreshTokenRepository implements RefreshTokenRepository {
     }
 
     @Override
+    @EvictCache(RefreshToken.class)
     public void revokeByUser(User user) {
         entityManager.createQuery(
                 "UPDATE RefreshToken r SET r.revoked = true WHERE r.user = :user")
@@ -45,6 +47,7 @@ public class JpaRefreshTokenRepository implements RefreshTokenRepository {
     }
 
     @Override
+    @EvictCache(RefreshToken.class)
     public void deleteByToken(String token) {
         entityManager.createQuery(
                 "DELETE FROM RefreshToken r WHERE r.token = :token")

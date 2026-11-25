@@ -4,6 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import ru.ifmo.se.application.repository.RingRepository;
+import ru.ifmo.se.persistence.cache.EvictCache;
+import ru.ifmo.se.persistence.entity.BookCreature;
 import ru.ifmo.se.persistence.entity.Ring;
 
 import java.util.List;
@@ -38,6 +40,7 @@ public class JpaRingRepository implements RingRepository {
     }
 
     @Override
+    @EvictCache({Ring.class, BookCreature.class})
     public void deleteById(int id) {
         entityManager.createNativeQuery("SELECT delete_ring_with_detach(:ring)")
             .setParameter("ring", id)
