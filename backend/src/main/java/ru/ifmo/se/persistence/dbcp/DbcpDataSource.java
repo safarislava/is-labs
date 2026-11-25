@@ -17,23 +17,24 @@ public final class DbcpDataSource extends BasicDataSource {
     private static final String RESOURCE_KEY = "ru.ifmo.se.dbcp.Connection";
     private final transient TransactionSynchronizationRegistry registry;
 
-    {
-        try {
-            registry = InitialContext.doLookup(REGISTRY_NAME);
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @SuppressWarnings("this-escape")
     public DbcpDataSource() {
         super();
+        this.registry = lookupRegistry();
         setUrl(System.getenv("DB_URL"));
         setUsername(System.getenv("DB_USER"));
         setPassword(System.getenv("DB_PASSWORD"));
         setDriverClassName("org.postgresql.Driver");
         setInitialSize(5);
         setMaxTotal(20);
+    }
+
+    private static TransactionSynchronizationRegistry lookupRegistry() {
+        try {
+            return InitialContext.doLookup(REGISTRY_NAME);
+        } catch (NamingException e) {
+            throw new IllegalStateException("Failed to lookup TransactionSynchronizationRegistry", e);
+        }
     }
 
     @Override
