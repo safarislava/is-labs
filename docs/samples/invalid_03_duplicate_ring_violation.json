@@ -1,36 +1,89 @@
 {
   "rings": [
     {
-      "tempId": 1,
-      "name": "Единое Кольцо",
+      "tempId": 101,
+      "name": "Единое Кольцо Всевластья",
       "power": 1000
+    },
+    {
+      "tempId": 102,
+      "name": "Эльфийское Кольцо Воздуха (Вилья)",
+      "power": 400
     }
   ],
-  "cities": [],
+  "cities": [
+    {
+      "tempId": 201,
+      "name": "Шир (Хоббитон)",
+      "area": 8000,
+      "population": 35000,
+      "establishmentDate": "1601-03-15T00:00:00",
+      "governor": "HOBBIT",
+      "capital": true,
+      "populationDensity": 4.37
+    },
+    {
+      "tempId": 202,
+      "name": "Ривенделл (Имладрис)",
+      "area": 6000,
+      "population": 7500,
+      "establishmentDate": "1697-01-01T00:00:00",
+      "governor": "ELF",
+      "capital": false,
+      "populationDensity": 1.25
+    }
+  ],
   "creatures": [
     {
-      "name": "Фродо Бэггинс",
+      "name": "Элронд Владыка Ривенделла",
       "coordinates": {
-        "x": 10,
-        "y": 20.0
+        "x": 210,
+        "y": 160.0
+      },
+      "age": 6520,
+      "creatureType": "ELF",
+      "attackLevel": 88.0,
+      "defenseLevel": 94.0,
+      "tempRingId": 102,
+      "tempCreatureLocationId": 202
+    },
+    {
+      "name": "Фродо Бэггинс Хранитель Кольца",
+      "coordinates": {
+        "x": 98,
+        "y": 240.0
       },
       "age": 50,
       "creatureType": "HOBBIT",
-      "attackLevel": 20.0,
-      "defenseLevel": 30.0,
-      "tempRingId": 1
+      "attackLevel": 25.0,
+      "defenseLevel": 45.0,
+      "tempRingId": 101,
+      "tempCreatureLocationId": 201
     },
     {
-      "name": "Горлум (пытается отобрать)",
+      "name": "Горлум (Смеагол, пытается отобрать кольцо)",
       "coordinates": {
-        "x": 15,
-        "y": 25.0
+        "x": 105,
+        "y": 245.0
       },
       "age": 589,
       "creatureType": "GOLLUM",
-      "attackLevel": 40.0,
-      "defenseLevel": 20.0,
-      "tempRingId": 1
+      "attackLevel": 35.0,
+      "defenseLevel": 25.0,
+      "tempRingId": 101,
+      "tempCreatureLocationId": 201
+    },
+    {
+      "name": "Сэмуайз Гэмджи",
+      "coordinates": {
+        "x": 97,
+        "y": 238.0
+      },
+      "age": 38,
+      "creatureType": "HOBBIT",
+      "attackLevel": 20.0,
+      "defenseLevel": 40.0,
+      "tempCreatureLocationId": 201
     }
   ]
 }

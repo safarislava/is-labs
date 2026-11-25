@@ -1,28 +1,75 @@
 {
-  "rings": [],
-  "cities": [],
-  "creatures": [
+  "rings": [
     {
-      "name": "Невалидное существо (возраст <= 0)",
-      "coordinates": {
-        "x": 100,
-        "y": 100.0
-      },
-      "age": 0,
-      "creatureType": "HOBBIT",
-      "attackLevel": 10.0,
-      "defenseLevel": 10.0
+      "tempId": 101,
+      "name": "Разрушенное кольцо",
+      "power": 0
     },
     {
-      "name": "Невалидное существо (атака <= 0)",
+      "tempId": 102,
+      "name": "Кольцо Барахира",
+      "power": 300
+    }
+  ],
+  "cities": [
+    {
+      "tempId": 201,
+      "name": "Опустевший Осгилиат",
+      "area": -500,
+      "population": 0,
+      "establishmentDate": "1500-01-01T00:00:00",
+      "governor": "HUMAN",
+      "capital": false,
+      "populationDensity": -1.5
+    },
+    {
+      "tempId": 202,
+      "name": "Минас Тирит (Белый Город)",
+      "area": 15000,
+      "population": 50000,
+      "establishmentDate": "3320-01-01T00:00:00",
+      "governor": "HUMAN",
+      "capital": true,
+      "populationDensity": 3.33
+    }
+  ],
+  "creatures": [
+    {
+      "name": "Призрак Дунхарроу",
       "coordinates": {
         "x": 100,
-        "y": 100.0
+        "y": 200.0
       },
-      "age": 50,
+      "age": 0,
       "creatureType": "HUMAN",
-      "attackLevel": 0.0,
-      "defenseLevel": -5.0
+      "attackLevel": -10.0,
+      "defenseLevel": 50.0,
+      "tempCreatureLocationId": 202
+    },
+    {
+      "name": "Раненый гондорский страж",
+      "coordinates": {
+        "x": 120,
+        "y": 180.0
+      },
+      "age": 25,
+      "creatureType": "HUMAN",
+      "attackLevel": 40.0,
+      "defenseLevel": 0.0,
+      "tempCreatureLocationId": 202
+    },
+    {
+      "name": "Фарамир Капитан Гондора",
+      "coordinates": {
+        "x": 110,
+        "y": 190.0
+      },
+      "age": 36,
+      "creatureType": "HUMAN",
+      "attackLevel": 82.0,
+      "defenseLevel": 80.0,
+      "tempRingId": 102,
+      "tempCreatureLocationId": 202
     }
   ]
 }
