@@ -22,10 +22,10 @@ import ru.ifmo.se.application.usecase.BookCreatureUseCase;
 import ru.ifmo.se.application.usecase.MagicCityUseCase;
 import ru.ifmo.se.application.usecase.RingUseCase;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 public class BatchExecutionService {
@@ -57,7 +57,7 @@ public class BatchExecutionService {
     }
 
     public Map<Integer, Integer> createRings(List<BatchRingCreateCommand> commands, List<RingResult> results) {
-        Map<Integer, Integer> ringRefs = new ConcurrentHashMap<>();
+        Map<Integer, Integer> ringRefs = new HashMap<>();
         for (BatchRingCreateCommand command : commands) {
             RingResult createdRing = ringUseCase.create(objectsMapper.toCommand(command));
             results.add(createdRing);
@@ -67,7 +67,7 @@ public class BatchExecutionService {
     }
 
     public Map<Integer, Integer> createCities(List<BatchMagicCityCreateCommand> commands, List<MagicCityResult> results) {
-        Map<Integer, Integer> cityRefs = new ConcurrentHashMap<>();
+        Map<Integer, Integer> cityRefs = new HashMap<>();
         for (BatchMagicCityCreateCommand command : commands) {
             MagicCityResult createdCity = magicCityUseCase.create(objectsMapper.toCommand(command));
             results.add(createdCity);
