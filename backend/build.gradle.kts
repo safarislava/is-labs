@@ -22,6 +22,8 @@ repositories {
 dependencies {
     providedCompile("jakarta.platform:jakarta.jakartaee-api:10.0.0")
     providedCompile("org.eclipse.persistence:eclipselink:4.0.4")
+    providedCompile("org.infinispan:infinispan-core:16.0.13")
+    providedCompile("org.infinispan:infinispan-component-annotations:16.0.13")
     providedCompile("org.postgresql:postgresql:42.7.14")
     implementation("org.apache.commons:commons-dbcp2:2.13.0")
     implementation("org.mindrot:jbcrypt:0.4")
