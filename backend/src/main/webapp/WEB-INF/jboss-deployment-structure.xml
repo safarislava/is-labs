@@ -6,6 +6,8 @@
             <module name="org.infinispan"/>
             <module name="org.infinispan.commons"/>
             <module name="org.postgresql"/>
+            <module name="com.fasterxml.jackson.core.jackson-core"/>
+            <module name="com.fasterxml.jackson.core.jackson-databind"/>
             <module name="java.desktop"/>
             <module name="java.sql"/>
         </dependencies>
