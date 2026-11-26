@@ -42,6 +42,9 @@ public class ImportOperation {
     @Column(name = "added_objects_count")
     private Integer addedObjectsCount;
 
+    @Column(name = "s3_key")
+    private String s3Key;
+
     @Convert(converter = ZonedDateTimeConverter.class)
     @Column(name = "creation_date", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT now()")
     private ZonedDateTime creationDate;
