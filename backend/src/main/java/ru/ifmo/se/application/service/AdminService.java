@@ -3,6 +3,7 @@ package ru.ifmo.se.application.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.LogCache;
 import ru.ifmo.se.application.dto.command.UpdateUserRolesCommand;
 import ru.ifmo.se.application.dto.result.UserResult;
 import ru.ifmo.se.application.exception.UserNotFoundException;
@@ -17,6 +18,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 @ApplicationScoped
+@LogCache
 public class AdminService implements AdminUseCase {
 
     @Inject

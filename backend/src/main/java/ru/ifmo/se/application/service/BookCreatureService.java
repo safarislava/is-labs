@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.LogCache;
 import ru.ifmo.se.application.annotation.RepeatableRead;
 import ru.ifmo.se.application.dto.command.BookCreatureCreateCommand;
 import ru.ifmo.se.application.dto.command.BookCreatureUpdateCommand;
@@ -29,6 +30,7 @@ import ru.ifmo.se.persistence.entity.Ring;
 import java.util.List;
 
 @ApplicationScoped
+@LogCache
 public class BookCreatureService implements BookCreatureUseCase {
     @Inject
     private BookCreatureRepository bookCreatureRepository;

@@ -3,6 +3,7 @@ package ru.ifmo.se.application.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.LogCache;
 import ru.ifmo.se.application.dto.command.LoginCommand;
 import ru.ifmo.se.application.dto.command.RegisterCommand;
 import ru.ifmo.se.application.dto.result.AuthTokensResult;
@@ -28,6 +29,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @ApplicationScoped
+@LogCache
 public class AuthService implements AuthUseCase {
     private static final long REFRESH_TOKEN_VALIDITY_DAYS = 7;
 

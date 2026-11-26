@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.LogCache;
 import ru.ifmo.se.application.dto.command.ObjectsCreateCommand;
 import ru.ifmo.se.application.dto.event.ImportEvent;
 import ru.ifmo.se.application.dto.result.ObjectsResult;
@@ -12,6 +13,7 @@ import ru.ifmo.se.application.usecase.ObjectsUseCase;
 import java.util.Map;
 
 @ApplicationScoped
+@LogCache
 public class ObjectsService implements ObjectsUseCase {
 
     @Inject

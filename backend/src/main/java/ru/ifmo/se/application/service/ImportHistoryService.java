@@ -3,6 +3,7 @@ package ru.ifmo.se.application.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.LogCache;
 import ru.ifmo.se.application.dto.result.ImportOperationResult;
 import ru.ifmo.se.application.dto.result.PageResult;
 import ru.ifmo.se.application.mapper.ImportOperationMapper;
@@ -17,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @ApplicationScoped
+@LogCache
 public class ImportHistoryService implements ImportHistoryUseCase {
 
     @Inject
