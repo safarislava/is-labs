@@ -3,6 +3,8 @@ package ru.ifmo.se.persistence.cache;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionCustomizer;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.cache.StorageType;
@@ -27,6 +29,7 @@ public class InfinispanCacheSessionCustomizer implements SessionCustomizer {
                 .build();
         DefaultCacheManager cacheManager = new DefaultCacheManager(globalConfig);
         session.setProperty(DefaultCacheManager.class.getName(), cacheManager);
+        session.getEventManager().addListener(new CacheShutdownListener(cacheManager));
 
         Configuration cacheConfig = new ConfigurationBuilder()
                 .memory()
@@ -46,5 +49,20 @@ public class InfinispanCacheSessionCustomizer implements SessionCustomizer {
                 descriptor.getCachePolicy().setCacheInterceptorClass(InfinispanCacheInterceptor.class);
             }
         }
+    }
+}
+
+@SuppressWarnings("PMD.CloseResource")
+final class CacheShutdownListener extends SessionEventAdapter {
+
+    private final DefaultCacheManager cacheManager;
+
+    CacheShutdownListener(DefaultCacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+    }
+
+    @Override
+    public void postLogout(SessionEvent event) {
+        cacheManager.stop();
     }
 }
