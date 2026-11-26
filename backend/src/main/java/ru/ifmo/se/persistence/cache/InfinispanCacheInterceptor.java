@@ -39,14 +39,14 @@ public final class InfinispanCacheInterceptor extends CacheInterceptor {
     public Object get(Object primaryKey) {
         Object localEntity = super.get(primaryKey);
         if (localEntity != null) {
-            return statistics.recordValue(targetIdentityMap.getDescriptorClass(), localEntity);
+            return statistics.recordValue(targetIdentityMap.getDescriptorClass(), primaryKey, localEntity);
         }
 
         Object infinispanEntity = primaryKey != null ? cache.get(primaryKey) : null;
         if (infinispanEntity != null) {
             super.put(primaryKey, infinispanEntity, null, System.currentTimeMillis());
         }
-        return statistics.recordValue(targetIdentityMap.getDescriptorClass(), infinispanEntity);
+        return statistics.recordValue(targetIdentityMap.getDescriptorClass(), primaryKey, infinispanEntity);
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class InfinispanCacheInterceptor extends CacheInterceptor {
             }
         }
         if (!forCreate && primaryKey != null) {
-            statistics.recordKey(targetIdentityMap.getDescriptorClass(), cacheKey);
+            statistics.recordKey(targetIdentityMap.getDescriptorClass(), primaryKey, cacheKey);
         }
         return cacheKey != null ? createCacheKeyInterceptor(cacheKey) : null;
     }

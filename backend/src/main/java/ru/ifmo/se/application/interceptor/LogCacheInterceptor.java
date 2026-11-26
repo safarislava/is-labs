@@ -12,7 +12,7 @@ import ru.ifmo.se.persistence.cache.L2CacheLogger;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Map;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Interceptor
@@ -40,9 +40,9 @@ public class LogCacheInterceptor implements Serializable {
         try {
             return context.proceed();
         } finally {
-            Map<String, String> accesses = statistics.finishTracking();
-            for (Map.Entry<String, String> entry : accesses.entrySet()) {
-                LOGGER.info(() -> String.format("[L2 Cache] %s: %s", entry.getKey(), entry.getValue()));
+            List<String> accesses = statistics.finishTracking();
+            for (String entry : accesses) {
+                LOGGER.info(() -> entry);
             }
         }
     }
