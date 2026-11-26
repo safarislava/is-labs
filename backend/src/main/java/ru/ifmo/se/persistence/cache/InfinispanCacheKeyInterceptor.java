@@ -15,7 +15,6 @@ final class InfinispanCacheKeyInterceptor extends CacheKeyInterceptor {
     InfinispanCacheKeyInterceptor(CacheKey wrappedKey, Cache<Object, Object> cache) {
         super(wrappedKey);
         this.cache = cache;
-        wrappedKey.setIsWrapper(true);
     }
 
     @Override
@@ -36,6 +35,9 @@ final class InfinispanCacheKeyInterceptor extends CacheKeyInterceptor {
     public void setObject(Object object) {
         super.setObject(object);
         Object key = getKey();
+        if (key == null) {
+            return;
+        }
         if (object != null) {
             cache.put(key, object);
         } else {
@@ -47,7 +49,7 @@ final class InfinispanCacheKeyInterceptor extends CacheKeyInterceptor {
     public void setInvalidationState(int invalidationState) {
         super.setInvalidationState(invalidationState);
         Object key = getKey();
-        if (invalidationState == CacheKey.CACHE_KEY_INVALID && key != null) {
+        if (invalidationState == CACHE_KEY_INVALID && key != null) {
             cache.remove(key);
         }
     }
