@@ -2,7 +2,7 @@ package ru.ifmo.se.application.exception;
 
 import java.io.Serial;
 
-public class MagicCitySwapSameException extends RuntimeException {
+public class MagicCitySwapSameException extends InvalidInputException {
     @Serial
     private static final long serialVersionUID = 1L;
 

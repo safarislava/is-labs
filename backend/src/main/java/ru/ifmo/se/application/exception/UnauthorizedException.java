@@ -2,16 +2,15 @@ package ru.ifmo.se.application.exception;
 
 import java.io.Serial;
 
-public class UnauthorizedException extends RuntimeException {
+public abstract class UnauthorizedException extends ApplicationException {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public UnauthorizedException(String message) {
-        super(message);
+    protected UnauthorizedException(String message) {
+        super(ErrorType.UNAUTHORIZED, message);
     }
 
-    @Override
-    public String getLocalizedMessage() {
-        return getMessage() != null ? getMessage() : "Требуется авторизация";
+    protected UnauthorizedException(String message, Throwable cause) {
+        super(ErrorType.UNAUTHORIZED, message, cause);
     }
 }

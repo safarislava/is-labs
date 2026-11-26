@@ -4,7 +4,7 @@ import ru.ifmo.se.persistence.entity.BookCreature;
 
 import java.io.Serial;
 
-public class RingAlreadyInUseException extends RuntimeException {
+public class RingAlreadyInUseException extends ConflictException {
     @Serial
     private static final long serialVersionUID = 1L;
 

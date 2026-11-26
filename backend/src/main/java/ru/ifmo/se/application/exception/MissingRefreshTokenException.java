@@ -2,7 +2,7 @@ package ru.ifmo.se.application.exception;
 
 import java.io.Serial;
 
-public class MissingRefreshTokenException extends RuntimeException {
+public class MissingRefreshTokenException extends UnauthorizedException {
     @Serial
     private static final long serialVersionUID = 1L;
 

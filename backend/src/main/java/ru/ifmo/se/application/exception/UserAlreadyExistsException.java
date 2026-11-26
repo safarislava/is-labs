@@ -2,7 +2,7 @@ package ru.ifmo.se.application.exception;
 
 import java.io.Serial;
 
-public class UserAlreadyExistsException extends RuntimeException {
+public class UserAlreadyExistsException extends ConflictException {
     @Serial
     private static final long serialVersionUID = 1L;
 

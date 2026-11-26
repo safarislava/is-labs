@@ -2,7 +2,7 @@ package ru.ifmo.se.application.exception;
 
 import java.io.Serial;
 
-public class InvalidCredentialsException extends RuntimeException {
+public class InvalidCredentialsException extends UnauthorizedException {
     @Serial
     private static final long serialVersionUID = 1L;
 

@@ -2,7 +2,7 @@ package ru.ifmo.se.application.exception;
 
 import java.io.Serial;
 
-public class BookCreatureNotFoundException extends RuntimeException {
+public class BookCreatureNotFoundException extends ResourceNotFoundException {
     @Serial
     private static final long serialVersionUID = 1L;
 

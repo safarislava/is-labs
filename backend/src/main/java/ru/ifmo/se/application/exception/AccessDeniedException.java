@@ -2,16 +2,15 @@ package ru.ifmo.se.application.exception;
 
 import java.io.Serial;
 
-public class AccessDeniedException extends RuntimeException {
+public abstract class AccessDeniedException extends ApplicationException {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public AccessDeniedException(String message) {
-        super(message);
+    protected AccessDeniedException(String message) {
+        super(ErrorType.FORBIDDEN, message);
     }
 
-    @Override
-    public String getLocalizedMessage() {
-        return getMessage() != null ? getMessage() : "Доступ запрещен: недостаточно прав";
+    protected AccessDeniedException(String message, Throwable cause) {
+        super(ErrorType.FORBIDDEN, message, cause);
     }
 }
