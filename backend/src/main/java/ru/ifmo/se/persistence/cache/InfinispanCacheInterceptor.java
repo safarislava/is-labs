@@ -13,25 +13,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.UselessOverridingMethod"})
 public final class InfinispanCacheInterceptor extends CacheInterceptor {
     private final Cache<Object, Object> cache;
+    private final L2CacheLogger statistics;
 
     @SuppressWarnings("PMD.CloseResource")
     public InfinispanCacheInterceptor(IdentityMap targetIdentityMap, AbstractSession interceptedSession) {
         super(targetIdentityMap, interceptedSession);
-        Object property = interceptedSession.getRootSession(null).getProperty(DefaultCacheManager.class.getName());
-        if (!(property instanceof DefaultCacheManager manager)) {
-            throw new IllegalStateException("DefaultCacheManager is not configured on session");
-        }
+        AbstractSession rootSession = interceptedSession.getRootSession(null);
+        DefaultCacheManager manager = (DefaultCacheManager) rootSession.getProperty(DefaultCacheManager.class.getName());
         this.cache = manager.getCache(targetIdentityMap.getDescriptorClass().getName());
+        this.statistics = (L2CacheLogger) rootSession.getProperty(L2CacheLogger.class.getName());
     }
 
     @Override
@@ -43,14 +39,14 @@ public final class InfinispanCacheInterceptor extends CacheInterceptor {
     public Object get(Object primaryKey) {
         Object localEntity = super.get(primaryKey);
         if (localEntity != null) {
-            return localEntity;
+            return statistics.recordValue(targetIdentityMap.getDescriptorClass(), localEntity);
         }
 
-        Object infinispanEntity = cache.get(primaryKey);
+        Object infinispanEntity = primaryKey != null ? cache.get(primaryKey) : null;
         if (infinispanEntity != null) {
             super.put(primaryKey, infinispanEntity, null, System.currentTimeMillis());
         }
-        return infinispanEntity;
+        return statistics.recordValue(targetIdentityMap.getDescriptorClass(), infinispanEntity);
     }
 
     @Override
@@ -75,6 +71,9 @@ public final class InfinispanCacheInterceptor extends CacheInterceptor {
             if (cached != null) {
                 cacheKey = super.put(primaryKey, cached, null, System.currentTimeMillis());
             }
+        }
+        if (!forCreate && primaryKey != null) {
+            statistics.recordKey(targetIdentityMap.getDescriptorClass(), cacheKey);
         }
         return cacheKey != null ? createCacheKeyInterceptor(cacheKey) : null;
     }

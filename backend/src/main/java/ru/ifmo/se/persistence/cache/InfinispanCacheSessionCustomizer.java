@@ -29,6 +29,7 @@ public class InfinispanCacheSessionCustomizer implements SessionCustomizer {
                 .build();
         DefaultCacheManager cacheManager = new DefaultCacheManager(globalConfig);
         session.setProperty(DefaultCacheManager.class.getName(), cacheManager);
+        session.setProperty(L2CacheLogger.class.getName(), new L2CacheLogger());
         session.getEventManager().addListener(new CacheShutdownListener(cacheManager));
 
         Configuration cacheConfig = new ConfigurationBuilder()
