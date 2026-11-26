@@ -6,13 +6,24 @@ import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
 import org.eclipse.persistence.sessions.interceptors.CacheKeyInterceptor;
+import org.infinispan.Cache;
+import org.infinispan.manager.DefaultCacheManager;
 
 import java.util.Map;
 
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.UselessOverridingMethod"})
 public final class InfinispanCacheInterceptor extends CacheInterceptor {
-    InfinispanCacheInterceptor(IdentityMap targetIdentityMap, AbstractSession interceptedSession) {
+
+    private final Cache<Object, Object> cache;
+
+    @SuppressWarnings("PMD.CloseResource")
+    public InfinispanCacheInterceptor(IdentityMap targetIdentityMap, AbstractSession interceptedSession) {
         super(targetIdentityMap, interceptedSession);
+        Object property = interceptedSession.getRootSession(null).getProperty(DefaultCacheManager.class.getName());
+        if (!(property instanceof DefaultCacheManager manager)) {
+            throw new IllegalStateException("DefaultCacheManager is not configured on session");
+        }
+        this.cache = manager.getCache(targetIdentityMap.getDescriptorClass().getName());
     }
 
     @Override
@@ -22,7 +33,7 @@ public final class InfinispanCacheInterceptor extends CacheInterceptor {
 
     @Override
     protected CacheKeyInterceptor createCacheKeyInterceptor(CacheKey wrappedCacheKey) {
-        return new InfinispanCacheKeyInterceptor(wrappedCacheKey);
+        return new InfinispanCacheKeyInterceptor(wrappedCacheKey, cache);
     }
 
     @Override
