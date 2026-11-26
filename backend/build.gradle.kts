@@ -28,6 +28,11 @@ dependencies {
     implementation("org.apache.commons:commons-dbcp2:2.13.0")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("com.auth0:java-jwt:4.6.2")
+    implementation("software.amazon.awssdk:s3:2.31.18") {
+        exclude(group = "software.amazon.awssdk", module = "netty-nio-client")
+        exclude(group = "software.amazon.awssdk", module = "apache-client")
+    }
+    implementation("software.amazon.awssdk:url-connection-client:2.31.18")
 }
 
 tasks.withType<JavaCompile> {
