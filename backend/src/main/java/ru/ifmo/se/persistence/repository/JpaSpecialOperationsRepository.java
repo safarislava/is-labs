@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import ru.ifmo.se.application.dto.result.PageResult;
 import ru.ifmo.se.application.repository.SpecialOperationsRepository;
+import ru.ifmo.se.persistence.cache.EvictCache;
 import ru.ifmo.se.persistence.entity.BookCreature;
 
 import java.util.List;
@@ -15,13 +16,12 @@ public class JpaSpecialOperationsRepository implements SpecialOperationsReposito
     private EntityManager entityManager;
 
     @Override
+    @EvictCache
     public int deleteByDefenseLevel(float defenseLevel) {
         Number result = (Number) entityManager.createNativeQuery(
                 "SELECT delete_by_defense_level(?1)")
                 .setParameter(1, defenseLevel)
                 .getSingleResult();
-        entityManager.getEntityManagerFactory().getCache().evictAll();
-        entityManager.clear();
         return result.intValue();
     }
 
@@ -49,22 +49,20 @@ public class JpaSpecialOperationsRepository implements SpecialOperationsReposito
     }
 
     @Override
+    @EvictCache
     public int takeAllRingsFromHobbits() {
         Number result = (Number) entityManager.createNativeQuery(
                 "SELECT take_rings_from_hobbits()")
                 .getSingleResult();
-        entityManager.getEntityManagerFactory().getCache().evictAll();
-        entityManager.clear();
         return result.intValue();
     }
 
     @Override
+    @EvictCache
     public int moveHobbitsWithRingsToMordor() {
         Number result = (Number) entityManager.createNativeQuery(
                 "SELECT move_hobbits_with_rings_to_mordor()")
                 .getSingleResult();
-        entityManager.getEntityManagerFactory().getCache().evictAll();
-        entityManager.clear();
         return result.intValue();
     }
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import ru.ifmo.se.application.dto.query.CreatureSearchQuery;
 import ru.ifmo.se.application.dto.result.PageResult;
 import ru.ifmo.se.application.repository.BookCreatureRepository;
+import ru.ifmo.se.persistence.cache.EvictCache;
 import ru.ifmo.se.persistence.entity.BookCreature;
 import ru.ifmo.se.persistence.entity.MagicCity;
 
@@ -47,6 +48,7 @@ public class JpaBookCreatureRepository implements BookCreatureRepository {
     }
 
     @Override
+    @EvictCache(BookCreature.class)
     public void reassignCity(int oldCityId, MagicCity newCity) {
         entityManager.createQuery(
                 "UPDATE BookCreature b SET b.creatureLocation = :newCity WHERE b.creatureLocation.id = :oldCityId")

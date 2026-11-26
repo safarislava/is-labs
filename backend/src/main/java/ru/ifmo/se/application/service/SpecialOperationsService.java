@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.LogCache;
 import ru.ifmo.se.application.dto.event.NotificationEvent;
 import ru.ifmo.se.application.dto.result.BookCreatureResult;
 import ru.ifmo.se.application.dto.result.PageResult;
@@ -17,6 +18,7 @@ import ru.ifmo.se.persistence.entity.BookCreature;
 import java.util.List;
 
 @ApplicationScoped
+@LogCache
 public class SpecialOperationsService implements SpecialOperationsUseCase {
     @Inject
     private SpecialOperationsRepository specialOperationsRepository;

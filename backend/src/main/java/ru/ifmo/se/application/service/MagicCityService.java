@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ru.ifmo.se.application.annotation.LogCache;
 import ru.ifmo.se.application.annotation.RepeatableRead;
 import ru.ifmo.se.application.dto.command.MagicCityCreateCommand;
 import ru.ifmo.se.application.dto.command.MagicCityUpdateCommand;
@@ -22,6 +23,7 @@ import ru.ifmo.se.persistence.entity.MagicCity;
 import java.util.List;
 
 @ApplicationScoped
+@LogCache
 public class MagicCityService implements MagicCityUseCase {
     @Inject
     private MagicCityRepository magicCityRepository;
