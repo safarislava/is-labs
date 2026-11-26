@@ -10,7 +10,6 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.cache.StorageType;
 import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
-import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
 
 import java.util.concurrent.TimeUnit;
@@ -36,7 +35,6 @@ public class InfinispanCacheSessionCustomizer implements SessionCustomizer {
                 .memory()
                     .storage(StorageType.HEAP)
                     .maxCount(MAX_CACHE_ENTRIES)
-                    .whenFull(EvictionStrategy.REMOVE)
                 .expiration()
                     .lifespan(CACHE_LIFESPAN_MINUTES, TimeUnit.MINUTES)
                     .maxIdle(CACHE_MAX_IDLE_MINUTES, TimeUnit.MINUTES)
@@ -46,7 +44,7 @@ public class InfinispanCacheSessionCustomizer implements SessionCustomizer {
 
         for (ClassDescriptor descriptor : session.getDescriptors().values()) {
             if (!descriptor.isAggregateDescriptor() && descriptor.getJavaClass() != null) {
-                cacheManager.administration().getOrCreateCache(descriptor.getJavaClass().getName(), cacheConfig);
+                cacheManager.defineConfiguration(descriptor.getJavaClass().getName(), cacheConfig);
                 descriptor.getCachePolicy().setCacheInterceptorClass(InfinispanCacheInterceptor.class);
             }
         }
