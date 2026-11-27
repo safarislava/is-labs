@@ -26,6 +26,7 @@ dependencies {
     providedCompile("org.infinispan:infinispan-component-annotations:16.0.13")
     providedCompile("org.postgresql:postgresql:42.7.14")
     providedCompile("com.fasterxml.jackson.core:jackson-databind:2.21.7")
+    providedCompile("org.jboss.narayana.jts:narayana-jts-idlj:7.3.4.Final")
     implementation("org.apache.commons:commons-dbcp2:2.13.0")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("com.auth0:java-jwt:4.6.2")

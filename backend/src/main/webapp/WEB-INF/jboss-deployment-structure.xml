@@ -8,6 +8,7 @@
             <module name="org.postgresql"/>
             <module name="com.fasterxml.jackson.core.jackson-core"/>
             <module name="com.fasterxml.jackson.core.jackson-databind"/>
+            <module name="org.jboss.jts"/>
             <module name="java.desktop"/>
             <module name="java.sql"/>
         </dependencies>
