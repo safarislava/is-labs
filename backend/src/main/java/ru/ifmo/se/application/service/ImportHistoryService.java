@@ -6,8 +6,13 @@ import jakarta.transaction.Transactional;
 import ru.ifmo.se.application.annotation.LogCache;
 import ru.ifmo.se.application.dto.result.ImportOperationResult;
 import ru.ifmo.se.application.dto.result.PageResult;
+import ru.ifmo.se.application.dto.result.SnapshotDownloadResult;
+import ru.ifmo.se.application.exception.ImportOperationAccessDeniedException;
+import ru.ifmo.se.application.exception.ImportOperationNotFoundException;
+import ru.ifmo.se.application.exception.SnapshotNotFoundException;
 import ru.ifmo.se.application.mapper.ImportOperationMapper;
 import ru.ifmo.se.application.repository.ImportOperationRepository;
+import ru.ifmo.se.application.repository.SnapshotRepository;
 import ru.ifmo.se.application.repository.UserRepository;
 import ru.ifmo.se.application.usecase.ImportHistoryUseCase;
 import ru.ifmo.se.persistence.entity.ImportOperation;
@@ -29,6 +34,9 @@ public class ImportHistoryService implements ImportHistoryUseCase {
 
     @Inject
     private ImportOperationMapper mapper;
+
+    @Inject
+    private SnapshotRepository snapshotRepository;
 
     @Override
     public List<ImportOperationResult> getHistory(String username, boolean isAdmin) {
@@ -54,21 +62,43 @@ public class ImportHistoryService implements ImportHistoryUseCase {
         return new PageResult<>(results, pageResult.getTotal(), pageResult.getPage(), pageResult.getSize());
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public ImportOperation createFailedOperation(String username) {
+    @Override
+    public SnapshotDownloadResult downloadSnapshot(int operationId, String username, boolean isAdmin) {
+        ImportOperation operation = importOperationRepository.findById(operationId)
+                .orElseThrow(() -> new ImportOperationNotFoundException(operationId));
+
+        if (!isAdmin && (operation.getUser() == null || !operation.getUser().getUsername().equals(username))) {
+            throw new ImportOperationAccessDeniedException(operationId);
+        }
+
+        String s3Key = operation.getS3Key();
+        if (s3Key == null || s3Key.isBlank()) {
+            throw new SnapshotNotFoundException(operationId);
+        }
+
+        return snapshotRepository.findSnapshot(s3Key);
+    }
+
+    @Transactional(Transactional.TxType.MANDATORY)
+    public ImportOperationResult createSuccessOperation(String username, int addedObjectsCount, String s3Key) {
+        ImportOperation operation = buildOperation(username, ImportStatus.SUCCESS);
+        operation.setAddedObjectsCount(addedObjectsCount);
+        operation.setS3Key(s3Key);
+        return mapper.toResult(importOperationRepository.save(operation));
+    }
+
+    @Transactional
+    public ImportOperationResult createFailedOperation(String username, ImportStatus status) {
+        ImportOperation operation = buildOperation(username, status);
+        return mapper.toResult(importOperationRepository.save(operation));
+    }
+
+    private ImportOperation buildOperation(String username, ImportStatus status) {
         User user = userRepository.findByUsername(username).orElseThrow();
         ImportOperation operation = new ImportOperation();
         operation.setUser(user);
-        operation.setStatus(ImportStatus.FAILED);
+        operation.setStatus(status);
         operation.setCreationDate(ZonedDateTime.now());
-        return importOperationRepository.save(operation);
-    }
-
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public ImportOperation completeOperation(int operationId, int addedObjectsCount) {
-        ImportOperation operation = importOperationRepository.findById(operationId).orElseThrow();
-        operation.setStatus(ImportStatus.SUCCESS);
-        operation.setAddedObjectsCount(addedObjectsCount);
-        return importOperationRepository.save(operation);
+        return operation;
     }
 }
