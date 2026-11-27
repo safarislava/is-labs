@@ -41,20 +41,16 @@ public class ObjectsService implements ObjectsUseCase {
     private ImportFailureClassifier failureClassifier;
 
     @Override
-    @Transactional
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public ObjectsResult create(FileSnapshotUpload snapshotUpload, String username) {
-        ImportOperationResult started = importHistoryService.createInProgressOperation(username);
-        notificationPublisher.fire(new ImportNotificationEvent(username, started));
-
         ObjectsResult result = new ObjectsResult();
         try {
-            ImportOperationResult completed = self.execute(started.getId(), snapshotUpload, result);
+            ImportOperationResult completed = self.execute(snapshotUpload, username, result);
             notificationPublisher.fire(new ImportNotificationEvent(username, completed));
             return result;
         } catch (RuntimeException e) {
-            ImportOperationResult failed = importHistoryService.failOperation(
-                    started.getId(),
+            ImportOperationResult failed = importHistoryService.createFailedOperation(
+                    username,
                     failureClassifier.classify(e)
             );
             notificationPublisher.fire(new ImportNotificationEvent(username, failed));
@@ -62,19 +58,19 @@ public class ObjectsService implements ObjectsUseCase {
         }
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public ImportOperationResult execute(int operationId,
-                                         FileSnapshotUpload snapshotUpload,
+    @Transactional
+    public ImportOperationResult execute(FileSnapshotUpload snapshotUpload,
+                                         String username,
                                          ObjectsResult result) {
         ObjectsCreateCommand command = batchImportParser.parse(snapshotUpload);
 
-        String snapshotKey = snapshotRepository.saveSnapshot(operationId, snapshotUpload);
+        String snapshotKey = snapshotRepository.saveSnapshot(snapshotUpload);
 
         Map<Integer, Integer> ringRefs = batchExecutionService.createRings(command.getRings(), result.getRings());
         Map<Integer, Integer> cityRefs = batchExecutionService.createCities(command.getCities(), result.getCities());
         batchExecutionService.createCreatures(command.getCreatures(), ringRefs, cityRefs, result.getCreatures());
 
         int count = result.getRings().size() + result.getCities().size() + result.getCreatures().size();
-        return importHistoryService.completeOperation(operationId, count, snapshotKey);
+        return importHistoryService.createSuccessOperation(username, count, snapshotKey);
     }
 }
