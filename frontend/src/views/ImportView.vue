@@ -6,6 +6,7 @@ import { formatDateTime } from '@/utils/formatDate';
 import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseBadge, { type BadgeVariant } from '@/components/ui/BaseBadge.vue';
 import CreaturePagination from '@/components/creatures/CreaturePagination.vue';
+import type { ImportStatus } from '@/types/batch';
 import {
   Upload,
   FileUp,
@@ -73,7 +74,7 @@ function readFile(file: File) {
   const reader = new FileReader();
   reader.onload = (e) => {
     const text = String(e.target?.result ?? '');
-    importStore.setContent(text, file.name, file.size);
+    importStore.setContent(text, file.name, file.size, file);
   };
   reader.readAsText(file);
 }
@@ -136,6 +137,30 @@ function getTypeLabel(type: string): string {
     ORC: 'Орк',
   };
   return map[type] || type;
+}
+
+function getStatusClass(status: ImportStatus): string {
+  switch (status) {
+    case 'SUCCESS':
+      return 'status-success';
+    case 'INVALID_FILE':
+      return 'status-invalid-file';
+    case 'FAILED':
+    default:
+      return 'status-failed';
+  }
+}
+
+function getStatusLabel(status: ImportStatus): string {
+  switch (status) {
+    case 'SUCCESS':
+      return 'Успешно';
+    case 'INVALID_FILE':
+      return 'Неверный файл';
+    case 'FAILED':
+    default:
+      return 'Ошибка';
+  }
 }
 </script>
 
@@ -439,6 +464,7 @@ function getTypeLabel(type: string): string {
               <th>Статус</th>
               <th>Пользователь</th>
               <th>Добавлено объектов</th>
+              <th>Файл</th>
               <th>Время создания</th>
             </tr>
           </thead>
@@ -448,15 +474,11 @@ function getTypeLabel(type: string): string {
                 <span class="temp-id-pill">#{{ op.id }}</span>
               </td>
               <td>
-                <span
-                  :class="[
-                    'status-badge',
-                    op.status === 'SUCCESS' ? 'status-success' : 'status-failed',
-                  ]"
-                >
+                <span :class="['status-badge', getStatusClass(op.status)]">
                   <CheckCircle2 v-if="op.status === 'SUCCESS'" :size="13" />
+                  <AlertTriangle v-else-if="op.status === 'INVALID_FILE'" :size="13" />
                   <XCircle v-else :size="13" />
-                  {{ op.status === 'SUCCESS' ? 'Успешно' : 'Ошибка' }}
+                  {{ getStatusLabel(op.status) }}
                 </span>
               </td>
               <td>
@@ -466,6 +488,20 @@ function getTypeLabel(type: string): string {
                 <span v-if="op.status === 'SUCCESS' && op.addedObjectsCount != null">
                   {{ op.addedObjectsCount }}
                 </span>
+                <span v-else class="text-dim">—</span>
+              </td>
+              <td>
+                <div v-if="op.status === 'SUCCESS'" class="snapshot-cell">
+                  <BaseButton
+                    variant="secondary"
+                    size="sm"
+                    :loading="importStore.downloadingId === op.id"
+                    @click="importStore.downloadSnapshot(op)"
+                  >
+                    <Download :size="13" />
+                    Скачать
+                  </BaseButton>
+                </div>
                 <span v-else class="text-dim">—</span>
               </td>
               <td>
@@ -814,9 +850,20 @@ function getTypeLabel(type: string): string {
   border: 1px solid rgba(152, 195, 121, 0.35);
 }
 
+.status-invalid-file {
+  background: rgba(229, 192, 123, 0.15);
+  color: #e5c07b;
+  border: 1px solid rgba(229, 192, 123, 0.35);
+}
+
 .status-failed {
   background: rgba(224, 108, 117, 0.15);
   color: #e06c75;
   border: 1px solid rgba(224, 108, 117, 0.35);
+}
+
+.snapshot-cell {
+  display: inline-flex;
+  align-items: center;
 }
 </style>

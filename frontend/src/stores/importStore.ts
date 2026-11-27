@@ -18,12 +18,14 @@ export const useImportStore = defineStore('import', () => {
   const rawContent = ref<string>('');
   const fileName = ref<string | null>(null);
   const fileSize = ref<number | null>(null);
+  const selectedFile = ref<File | null>(null);
 
   const validationErrors = ref<string[]>([]);
   const parsedRequest = ref<BatchObjectsCreateRequest | null>(null);
   const isParsedValid = ref<boolean>(false);
 
   const loading = ref<boolean>(false);
+  const downloadingId = ref<number | null>(null);
   const serverError = ref<string | null>(null);
   const serverErrorDetails = ref<string[]>([]);
   const lastResult = ref<BatchObjectsResponse | null>(null);
@@ -49,10 +51,11 @@ export const useImportStore = defineStore('import', () => {
     Math.ceil(historyTotal.value / (historySize.value || 1)),
   );
 
-  function setContent(content: string, name?: string, size?: number) {
+  function setContent(content: string, name?: string, size?: number, file?: File | null) {
     rawContent.value = content;
     fileName.value = name ?? null;
     fileSize.value = size ?? null;
+    selectedFile.value = file ?? null;
     serverError.value = null;
     serverErrorDetails.value = [];
     lastResult.value = null;
@@ -63,6 +66,7 @@ export const useImportStore = defineStore('import', () => {
     fileName.value = 'sample_import.json';
     rawContent.value = SAMPLE_JSON;
     fileSize.value = new Blob([SAMPLE_JSON]).size;
+    selectedFile.value = null;
     serverError.value = null;
     serverErrorDetails.value = [];
     lastResult.value = null;
@@ -106,7 +110,11 @@ export const useImportStore = defineStore('import', () => {
 
     loading.value = true;
     try {
-      const response = await objectsApi.createBatch(parsedRequest.value);
+      const uploadName = fileName.value || 'import.json';
+      const uploadFile =
+        selectedFile.value ??
+        new File([rawContent.value], uploadName, { type: 'application/json' });
+      const response = await objectsApi.importFile(uploadFile, uploadName);
       lastResult.value = response;
 
       queryClient.invalidateQueries({ queryKey: ['creatures'] });
@@ -155,10 +163,32 @@ export const useImportStore = defineStore('import', () => {
     }
   }
 
+  async function downloadSnapshot(op: ImportOperationResponse): Promise<void> {
+    if (op.status !== 'SUCCESS') {
+      return;
+    }
+    downloadingId.value = op.id;
+    try {
+      await objectsApi.downloadSnapshot(op.id);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Не удалось скачать снапшот файла';
+      notificationStore.addToast({
+        type: 'error',
+        title: 'Ошибка скачивания',
+        message,
+        duration: 5000,
+      });
+    } finally {
+      downloadingId.value = null;
+    }
+  }
+
   function reset() {
     rawContent.value = '';
     fileName.value = null;
     fileSize.value = null;
+    selectedFile.value = null;
     validationErrors.value = [];
     parsedRequest.value = null;
     isParsedValid.value = false;
@@ -166,6 +196,7 @@ export const useImportStore = defineStore('import', () => {
     serverErrorDetails.value = [];
     lastResult.value = null;
     loading.value = false;
+    downloadingId.value = null;
   }
 
   validate();
@@ -179,6 +210,7 @@ export const useImportStore = defineStore('import', () => {
     isParsedValid,
     previewCounts,
     loading,
+    downloadingId,
     serverError,
     serverErrorDetails,
     lastResult,
@@ -193,6 +225,7 @@ export const useImportStore = defineStore('import', () => {
     validate,
     fetchHistory,
     executeImport,
+    downloadSnapshot,
     reset,
   };
 });

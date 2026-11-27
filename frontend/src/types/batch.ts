@@ -45,7 +45,10 @@ export interface BatchObjectsResponse {
   creatures: BookCreatureResponse[];
 }
 
-export type ImportStatus = 'SUCCESS' | 'FAILED';
+export type ImportStatus =
+  | 'SUCCESS'
+  | 'INVALID_FILE'
+  | 'FAILED';
 
 export interface ImportOperationResponse {
   id: number;

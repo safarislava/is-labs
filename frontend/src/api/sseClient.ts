@@ -50,15 +50,34 @@ function handleImportOperation(op: ImportOperationResponse): void {
     .fetchHistory()
     .catch(() => {});
 
-  const isSuccess = op.status === 'SUCCESS';
-  useNotificationStore().addToast({
-    type: isSuccess ? 'success' : 'error',
-    title: isSuccess ? 'Импорт завершен' : 'Импорт не удался',
-    message: isSuccess
-      ? `Операция #${op.id} от ${op.username} выполнена успешно (добавлено: ${op.addedObjectsCount ?? 0})`
-      : `Операция #${op.id} от ${op.username} завершилась ошибкой`,
-    duration: 4000,
-  });
+  const notificationStore = useNotificationStore();
+  switch (op.status) {
+    case 'SUCCESS':
+      notificationStore.addToast({
+        type: 'success',
+        title: 'Импорт завершен',
+        message: `Операция #${op.id} от ${op.username} выполнена успешно (добавлено: ${op.addedObjectsCount ?? 0})`,
+        duration: 4000,
+      });
+      break;
+    case 'INVALID_FILE':
+      notificationStore.addToast({
+        type: 'error',
+        title: 'Неверный файл импорта',
+        message: `Операция #${op.id} от ${op.username}: неверный файл`,
+        duration: 4000,
+      });
+      break;
+    case 'FAILED':
+    default:
+      notificationStore.addToast({
+        type: 'error',
+        title: 'Импорт не удался',
+        message: `Операция #${op.id} от ${op.username} завершилась ошибкой`,
+        duration: 4000,
+      });
+      break;
+  }
 }
 
 class SseClient {
