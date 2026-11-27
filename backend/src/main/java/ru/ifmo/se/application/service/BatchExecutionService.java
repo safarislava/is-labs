@@ -2,14 +2,9 @@ package ru.ifmo.se.application.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.ValidationException;
-import jakarta.validation.Validator;
 import ru.ifmo.se.application.dto.command.BatchBookCreatureCreateCommand;
 import ru.ifmo.se.application.dto.command.BatchMagicCityCreateCommand;
 import ru.ifmo.se.application.dto.command.BatchRingCreateCommand;
-import ru.ifmo.se.application.dto.command.ObjectsCreateCommand;
 import ru.ifmo.se.application.dto.result.BookCreatureResult;
 import ru.ifmo.se.application.dto.result.MagicCityResult;
 import ru.ifmo.se.application.dto.result.RingResult;
@@ -25,7 +20,6 @@ import ru.ifmo.se.application.usecase.RingUseCase;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @ApplicationScoped
 public class BatchExecutionService {
@@ -41,20 +35,6 @@ public class BatchExecutionService {
 
     @Inject
     private ObjectsMapper objectsMapper;
-
-    @Inject
-    private Validator validator;
-
-    public void validateCommand(ObjectsCreateCommand command) {
-        if (command == null) {
-            throw new ValidationException("Пакет импорта не может быть пустым");
-        }
-
-        Set<ConstraintViolation<ObjectsCreateCommand>> violations = validator.validate(command);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
-    }
 
     public Map<Integer, Integer> createRings(List<BatchRingCreateCommand> commands, List<RingResult> results) {
         Map<Integer, Integer> ringRefs = new HashMap<>();
