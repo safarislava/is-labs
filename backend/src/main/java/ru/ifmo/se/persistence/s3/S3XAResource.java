@@ -10,13 +10,13 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 class S3XAResource implements XAResource {
-    private final S3ObjectClient objectClient;
-    private final Upload upload;
+    private final S3PreparedStorage preparedStorage;
+    private final S3PreparedStorage.PreparedUpload upload;
     private final Map<String, String> preparedKeysByXid = new ConcurrentHashMap<>();
     private final AtomicInteger transactionTimeoutSeconds = new AtomicInteger(0);
 
-    S3XAResource(S3ObjectClient objectClient, Upload upload) {
-        this.objectClient = objectClient;
+    S3XAResource(S3PreparedStorage preparedStorage, S3PreparedStorage.PreparedUpload upload) {
+        this.preparedStorage = preparedStorage;
         this.upload = upload;
     }
 
@@ -33,61 +33,43 @@ class S3XAResource implements XAResource {
         if (upload == null) {
             throw new XAException(XAException.XAER_PROTO);
         }
-        String xidKey = S3XidMapper.encodeXid(xid);
-        String preparedKey = S3XidMapper.buildXidPrefix(xidKey) + upload.fileName();
         try {
-            objectClient.putAndVerify(
-                    preparedKey,
-                    upload.content(),
-                    upload.contentType(),
-                    Map.of(S3XidMapper.META_FINAL_KEY, upload.finalKey())
-            );
-            preparedKeysByXid.put(xidKey, preparedKey);
+            String preparedKey = preparedStorage.stage(xid, upload);
+            preparedKeysByXid.put(XidCodec.encode(xid), preparedKey);
             return XA_OK;
         } catch (StorageException e) {
-            objectClient.deleteQuietly(preparedKey);
-            throw S3XidMapper.rmError("prepare", e);
+            throw toXaException("prepare", e);
         }
     }
 
     @Override
     public void commit(Xid xid, boolean onePhase) throws XAException {
-        String xidKey = S3XidMapper.encodeXid(xid);
+        String xidKey = XidCodec.encode(xid);
         if (onePhase && !preparedKeysByXid.containsKey(xidKey) && upload != null) {
             prepare(xid);
         }
 
         try {
             String preparedKey = preparedKeysByXid.get(xidKey);
-            if (preparedKey == null) {
-                preparedKey = objectClient.findFirstKey(S3XidMapper.buildXidPrefix(xidKey));
-            }
-            if (preparedKey == null) {
-                return;
-            }
-            objectClient.promote(preparedKey, upload);
+            preparedStorage.promote(xid, preparedKey, upload);
             preparedKeysByXid.remove(xidKey);
         } catch (StorageException e) {
-            throw S3XidMapper.rmError("commit", e);
+            throw toXaException("commit", e);
         }
     }
 
     @Override
     public void rollback(Xid xid) throws XAException {
-        String xidKey = S3XidMapper.encodeXid(xid);
+        String xidKey = XidCodec.encode(xid);
         String preparedKey = preparedKeysByXid.remove(xidKey);
         if (preparedKey == null && upload != null) {
             return;
         }
 
         try {
-            if (preparedKey != null) {
-                objectClient.delete(preparedKey);
-            } else {
-                objectClient.deleteByPrefix(S3XidMapper.buildXidPrefix(xidKey));
-            }
+            preparedStorage.abort(xid, preparedKey);
         } catch (StorageException e) {
-            throw S3XidMapper.rmError("rollback", e);
+            throw toXaException("rollback", e);
         }
     }
 
@@ -102,9 +84,9 @@ class S3XAResource implements XAResource {
             return new Xid[0];
         }
         try {
-            return S3XidMapper.decodeXids(objectClient.listKeys(S3XidMapper.PREPARED_PREFIX));
+            return preparedStorage.listPreparedXids();
         } catch (StorageException e) {
-            throw S3XidMapper.rmError("recover", e);
+            throw toXaException("recover", e);
         }
     }
 
@@ -127,9 +109,10 @@ class S3XAResource implements XAResource {
         return true;
     }
 
-    record Upload(String fileName, String finalKey, byte[] content, String contentType) {
-        Upload {
-            content = content.clone();
-        }
+    private static XAException toXaException(String operation, StorageException cause) {
+        XAException ex = new XAException("S3 XA " + operation + " failed: " + cause.getLocalizedMessage());
+        ex.errorCode = XAException.XAER_RMERR;
+        ex.initCause(cause);
+        return ex;
     }
 }

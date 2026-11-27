@@ -73,27 +73,25 @@ class S3ObjectClient {
         }
     }
 
-    void promote(String preparedKey, S3XAResource.Upload upload) {
+    ObjectMetadata getObjectMetadata(String key) {
+        String bucket = s3DataSource.getBucket();
+        return execute(() -> {
+            HeadObjectResponse head = s3DataSource.getS3Client().headObject(b -> b.bucket(bucket).key(key));
+            return new ObjectMetadata(head.contentType(), head.metadata());
+        }, SnapshotCommitException::new);
+    }
+
+    void moveObject(String sourceKey, String targetKey, String contentType) {
         String bucket = s3DataSource.getBucket();
         execute(() -> {
-            String targetKey;
-            String targetType;
-            if (upload != null) {
-                targetKey = upload.finalKey();
-                targetType = upload.contentType();
-            } else {
-                HeadObjectResponse head = s3DataSource.getS3Client().headObject(b -> b.bucket(bucket).key(preparedKey));
-                targetKey = head.metadata().get(S3XidMapper.META_FINAL_KEY);
-                targetType = S3SnapshotNaming.resolveContentType(head.contentType());
-            }
             s3DataSource.getS3Client().copyObject(b -> b.sourceBucket(bucket)
-                    .sourceKey(preparedKey)
+                    .sourceKey(sourceKey)
                     .destinationBucket(bucket)
                     .destinationKey(targetKey)
-                    .contentType(targetType)
+                    .contentType(contentType)
                     .metadata(Map.of())
                     .metadataDirective(MetadataDirective.REPLACE));
-            s3DataSource.getS3Client().deleteObject(b -> b.bucket(bucket).key(preparedKey));
+            s3DataSource.getS3Client().deleteObject(b -> b.bucket(bucket).key(sourceKey));
             return null;
         }, SnapshotCommitException::new);
     }
@@ -146,5 +144,8 @@ class S3ObjectClient {
     }
 
     record ObjectPayload(byte[] content, String contentType) {
+    }
+
+    record ObjectMetadata(String contentType, Map<String, String> userMetadata) {
     }
 }

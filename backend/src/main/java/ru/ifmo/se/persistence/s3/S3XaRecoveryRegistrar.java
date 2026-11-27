@@ -14,7 +14,7 @@ import javax.transaction.xa.XAResource;
 @ApplicationScoped
 public class S3XaRecoveryRegistrar {
     @Inject
-    private S3ObjectClient objectClient;
+    private S3PreparedStorage preparedStorage;
 
     private final AtomicReference<XARecoveryModule> recoveryModuleRef = new AtomicReference<>();
     private final AtomicReference<XAResourceRecoveryHelper> helperRef = new AtomicReference<>();
@@ -23,7 +23,7 @@ public class S3XaRecoveryRegistrar {
     public void onStartup(@Observes @Initialized(ApplicationScoped.class) Object init) {
         XARecoveryModule module = XARecoveryModule.getRegisteredXARecoveryModule();
         if (module != null) {
-            XAResourceRecoveryHelper helper = new RecoveryHelper(objectClient);
+            XAResourceRecoveryHelper helper = new RecoveryHelper(preparedStorage);
             module.addXAResourceRecoveryHelper(helper);
             recoveryModuleRef.set(module);
             helperRef.set(helper);
@@ -39,7 +39,7 @@ public class S3XaRecoveryRegistrar {
         }
     }
 
-    private record RecoveryHelper(S3ObjectClient objectClient) implements XAResourceRecoveryHelper {
+    private record RecoveryHelper(S3PreparedStorage preparedStorage) implements XAResourceRecoveryHelper {
         @Override
         @SuppressWarnings("PMD.UnusedFormalParameter")
         public boolean initialise(String properties) {
@@ -48,7 +48,7 @@ public class S3XaRecoveryRegistrar {
 
         @Override
         public XAResource[] getXAResources() {
-            return new XAResource[] {new S3XAResource(objectClient, null)};
+            return new XAResource[] {new S3XAResource(preparedStorage, null)};
         }
     }
 }

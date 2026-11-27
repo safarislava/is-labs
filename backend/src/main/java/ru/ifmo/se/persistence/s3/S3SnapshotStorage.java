@@ -14,14 +14,17 @@ public class S3SnapshotStorage implements SnapshotRepository {
     @Inject
     private S3ObjectClient objectClient;
 
+    @Inject
+    private S3PreparedStorage preparedStorage;
+
     @Override
     public String saveSnapshot(FileSnapshotUpload upload) {
         String safeFileName = S3SnapshotNaming.sanitizeFileName(upload.fileName());
         String contentType = S3SnapshotNaming.resolveContentType(upload.contentType());
         String finalKey = S3SnapshotNaming.buildFinalKey(safeFileName);
         S3XAResource xaResource = new S3XAResource(
-                objectClient,
-                new S3XAResource.Upload(safeFileName, finalKey, upload.content(), contentType)
+                preparedStorage,
+                new S3PreparedStorage.PreparedUpload(safeFileName, finalKey, upload.content(), contentType)
         );
         s3DataSource.enlist(xaResource);
         return finalKey;
