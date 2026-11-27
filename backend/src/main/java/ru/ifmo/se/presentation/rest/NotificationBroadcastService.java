@@ -2,12 +2,14 @@ package ru.ifmo.se.presentation.rest;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.sse.OutboundSseEvent;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseBroadcaster;
 import jakarta.ws.rs.sse.SseEventSink;
+import ru.ifmo.se.application.dto.event.ImportNotificationEvent;
 import ru.ifmo.se.application.dto.event.NotificationEvent;
 import ru.ifmo.se.application.dto.result.ImportOperationResult;
 
@@ -27,6 +29,10 @@ public class NotificationBroadcastService {
         this.broadcaster = sse.newBroadcaster();
         this.broadcaster.onClose(sink -> sessions.removeIf(s -> s.sink().equals(sink)));
         this.broadcaster.onError((sink, throwable) -> sessions.removeIf(s -> s.sink().equals(sink)));
+    }
+
+    public void onImportNotification(@Observes ImportNotificationEvent event) {
+        broadcastImportOperation(event.targetUsername(), event.result());
     }
 
     public void registerSink(SseEventSink sink, String username, boolean isAdmin) {
